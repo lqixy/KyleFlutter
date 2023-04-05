@@ -5,16 +5,38 @@ import 'package:kyle_todolist/pages/calendar_page.dart';
 import 'package:kyle_todolist/pages/mine_page.dart';
 import 'package:kyle_todolist/pages/task_page.dart';
 import 'package:kyle_todolist/services/category_service.dart';
+import 'package:kyle_todolist/services/todo_service.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void setupLocator() {
   GetIt.I.registerLazySingleton(() => CategoryService());
+  GetIt.I.registerLazySingleton(() => TodoService());
 }
 
 void main() {
   setupLocator();
-  runApp(const MaterialApp(
-    home: HomePage(),
-  ));
+  // Intl.defaultLocale = 'en';
+
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  MyApp({super.key});
+
+  // final screes = [CollectCtn(), CalendarPage(), MinePage()];
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      supportedLocales: [
+        // Locale('en', ''),
+        Locale('zh', ''),
+      ],
+      home: HomePage(),
+    );
+  }
 }
 
 class HomePage extends StatefulWidget {
@@ -38,17 +60,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      // appBar: AppBar(),
+
       body: screes[_selectedIndex],
-      // bottomNavigationBar: NavigationBarTheme(
-      //   data: NavigationBarThemeData(indicatorColor: Colors.blue.shade100),
-      //   child: NavigationBar(destinations: [
-      //     NavigationDestination(icon: Icon(Icons.feed_outlined), label: '任务'),
-      //     NavigationDestination(
-      //         icon: Icon(Icons.calendar_view_day), label: '日历'),
-      //     NavigationDestination(icon: Icon(Icons.person_outline), label: '我的'),
-      //   ]),
-      // ),
       bottomNavigationBar: BottomNavigationBar(
         // showUnselectedLabels: false,
         items: const [

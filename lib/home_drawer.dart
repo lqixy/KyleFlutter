@@ -11,7 +11,7 @@ class HomeDrawer extends StatefulWidget {
 }
 
 class _HomeDrawerState extends State<HomeDrawer> {
-  /// 右边栏功能各类
+  /// 左边栏功能各类
   static List<HomeDrawerTitleItem> tiles = [
     HomeDrawerTitleItem(
         iconData: Icons.checkroom_outlined,
