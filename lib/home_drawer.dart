@@ -76,9 +76,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(e.title),
-                    const SizedBox(
-                      width: 150,
-                    ),
+                    // const SizedBox(
+                    //   width: 150,
+                    // ),
                     Text('')
                   ],
                 ),
@@ -91,32 +91,33 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      backgroundColor: Colors.grey[200],
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(15, 50, 15, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(0),
+            child: const Text(
               'To-Do List',
               style: TextStyle(fontSize: 40, color: Colors.lightBlue),
             ),
-            const SizedBox(
-              height: 30,
-            ),
-            Container(
+          ),
+          // const SizedBox(
+          //   height: 30,
+          // ),
+          Padding(
+            padding: EdgeInsets.all(0),
+            child: Container(
               decoration: getBoxDecoration(),
-              padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
                   DrawerItemRow(
                       iconData: Icons.star_outline,
                       iconColor: Colors.lightBlue,
                       title: '标星任务'),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  // const SizedBox(
+                  //   height: 20,
+                  // ),
                   InkWell(
                     onTap: () {
                       setState(() {
@@ -149,10 +150,13 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 ],
               ),
             ),
-            const SizedBox(
-              height: 20,
-            ),
-            Container(
+          ),
+          // const SizedBox(
+          //   height: 20,
+          // ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
               decoration: getBoxDecoration(),
               padding: const EdgeInsets.all(10),
               child: Column(
@@ -165,9 +169,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                 title: e.title),
                           ))
                       .toList()),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }
@@ -192,9 +196,9 @@ class DrawerItemRow extends StatelessWidget {
           iconData,
           color: iconColor,
         ),
-        const SizedBox(
-          width: 10,
-        ),
+        // const SizedBox(
+        //   width: 10,
+        // ),
         Text(title),
       ],
     );

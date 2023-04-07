@@ -16,7 +16,7 @@ class CalendarPage extends StatefulWidget {
 
 class _CalendarPageState extends State<CalendarPage> {
   TodoService service = GetIt.I<TodoService>();
-  List<TodoItem> todoItems = [];
+  List<TodoItem> todoSource = [];
   List<TodoItem> selectedTodoItems = [];
 
   final DateTime _selectedDay = DateTime.now();
@@ -25,8 +25,8 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   void initState() {
-    todoItems = service.getTodoList();
-    selectedTodoItems = todoItems
+    todoSource = service.getTodoList();
+    selectedTodoItems = todoSource
         .where((element) => element.deadline.isSameDay(_selectedDay))
         .toList();
     dates.add(_selectedDay);
@@ -36,7 +36,7 @@ class _CalendarPageState extends State<CalendarPage> {
   void updateSelectedTodoList(DateTime? time) {
     setState(() {
       dates = [time];
-      selectedTodoItems = todoItems
+      selectedTodoItems = todoSource
           .where((element) => element.deadline.isSameDay(time!))
           .toList();
     });
@@ -45,7 +45,7 @@ class _CalendarPageState extends State<CalendarPage> {
   void deleteTodoItem(int index) {
     var cur = selectedTodoItems[index];
     setState(() {
-      todoItems.remove(cur);
+      todoSource.remove(cur);
       selectedTodoItems.removeAt(index);
     });
   }

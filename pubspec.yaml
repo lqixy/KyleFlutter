@@ -38,6 +38,10 @@ dependencies:
   calendar_date_picker2: ^0.4.9
   flutter_slidable: ^2.0.0
   grouped_list: ^5.1.2
+  collection: ^1.17.0
+  anim_search_bar: ^2.0.3
+  get: 
+
 
 
   # The following adds the Cupertino Icons font to your application.

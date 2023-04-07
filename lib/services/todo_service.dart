@@ -13,6 +13,7 @@ class TodoService {
       (index) => TodoItem(
           id: index,
           title: 'totle: $index',
+          categoryId: random.nextInt(5) + 1,
           deadline: now.add(Duration(days: index))));
 
   List<TodoItem> getTodoList() {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:kyle_todolist/constants/navigator_provider.dart';
 import 'package:kyle_todolist/home_drawer.dart';
 import 'package:kyle_todolist/pages/calendar_page.dart';
 import 'package:kyle_todolist/pages/mine_page.dart';
@@ -7,6 +8,7 @@ import 'package:kyle_todolist/pages/task_page.dart';
 import 'package:kyle_todolist/services/category_service.dart';
 import 'package:kyle_todolist/services/todo_service.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get.dart';
 
 void setupLocator() {
   GetIt.I.registerLazySingleton(() => CategoryService());
@@ -17,7 +19,11 @@ void main() {
   setupLocator();
   // Intl.defaultLocale = 'en';
 
-  runApp(MyApp());
+  runApp(GetMaterialApp(
+    debugShowCheckedModeBanner: false,
+    locale: Locale('zh', 'CN'),
+    home: HomePage(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -27,7 +33,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      // navigatorKey: NavigatorProvider.navigatorKey,
       debugShowCheckedModeBanner: false,
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       supportedLocales: [
@@ -83,7 +90,7 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTap,
       ),
-      drawer: HomeDrawer(),
+      // drawer: HomeDrawer(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         elevation: 0,

@@ -1,9 +1,15 @@
+import 'package:anim_search_bar/anim_search_bar.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
+import 'package:kyle_todolist/home_drawer.dart';
 import 'package:kyle_todolist/models/todo_item.dart';
-import 'package:grouped_list/grouped_list.dart';
-import 'package:kyle_todolist/services/todo_service.dart';
+import 'package:kyle_todolist/pages/custom_drawer.dart';
 
+import 'package:kyle_todolist/pages/todo_item_build.dart';
+import 'package:kyle_todolist/services/category_service.dart';
+import 'package:kyle_todolist/services/todo_service.dart';
 import '../models/todo_category.dart';
 
 class TaskPage extends StatefulWidget {
@@ -15,6 +21,95 @@ class TaskPage extends StatefulWidget {
 
 class _TaskPageState extends State<TaskPage> {
   TodoService todoService = GetIt.I<TodoService>();
+  CategoryService categoryService = GetIt.I<CategoryService>();
+
+  List<TodoItem> todoSource = [];
+  List<TodoItem> selectedTodoItems = [];
+  List<TodoCategory> categories = [];
+
+  // final FocusNode _buttonFocusNode = FocusNode(debugLabel: 'Sort');
+  // Map<DateType, List<TodoItem>> todoGroupedMap = {};
+
+  int selectedCategoryId = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    todoSource = todoService.getTodoList();
+    selectedTodoItems = selectedCategoryId > 0
+        ? todoSource
+            .where((element) => element.categoryId == selectedCategoryId)
+            .toList()
+        : todoSource;
+    categories = categoryService.getCategories();
+    // todoGroupedMap = todoSource.groupListsBy((element) => element.dateType);
+  }
+
+  /// 选中分类按钮
+  void seletedCategoryButton(int id) {
+    setState(() {
+      selectedCategoryId = id;
+      selectedTodoItems = id > 0
+          ? todoSource.where((element) => element.categoryId == id).toList()
+          : todoSource;
+    });
+  }
+
+  /// 分类按钮
+  Widget getCategoryItemButton(TodoCategory e) {
+    return Padding(
+        padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+        child: TextButton(
+            style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all(
+                    selectedCategoryId == e.id
+                        ? Colors.lightBlue[600]
+                        : Colors.grey[500]),
+                backgroundColor: MaterialStateProperty.all(
+                    selectedCategoryId == e.id
+                        ? Colors.lightBlue[200]
+                        : Colors.grey[200]),
+                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)))),
+            onPressed: () {
+              seletedCategoryButton(e.id);
+            },
+            child: Text(e.title)));
+  }
+
+  void deleteTodoItem(int index) {
+    var cur = selectedTodoItems[index];
+    setState(() {
+      todoSource.remove(cur);
+      selectedTodoItems.removeAt(index);
+    });
+  }
+
+  void staredTodoItem(int index) {
+    var cur = selectedTodoItems[index];
+    setState(() {
+      cur.isMark = !cur.isMark;
+    });
+  }
+
+  void checkedTodoItem(int index) {
+    var cur = selectedTodoItems[index];
+    setState(() {
+      cur.finished = !cur.finished;
+    });
+  }
+
+  String _keyword = '';
+
+  void searchTodoList(String keyword) {
+    setState(() {
+      selectedTodoItems = selectedTodoItems
+          .where((element) => element.title.contains(keyword))
+          .toList();
+    });
+  }
+
+  TextEditingController textController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +119,83 @@ class _TaskPageState extends State<TaskPage> {
         children: [
           Padding(
             padding: EdgeInsets.all(8),
+            // child: AnimSearchBar(
+            //     width: 400,
+            //     textController: textController,
+            //     onSuffixTap: () {},
+            //     onSubmitted: (s) {}),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
-                IconButton(onPressed: () {}, icon: Icon(Icons.sort)),
+                Expanded(
+                    flex: 1,
+                    child: IconButton(
+                      onPressed: () {
+                        // RDrawer.open(
+                        //   HomeDrawer(),
+                        // );
+                      },
+                      icon: Icon(Icons.menu),
+                    )),
+                Expanded(
+                  flex: 8,
+                  child: AnimSearchBar(
+                    width: 400,
+                    textController: textController,
+                    onSuffixTap: () {
+                      // textController.clear();
+                      setState(() {
+                        _keyword = '';
+                      });
+                    },
+                    closeSearchOnSuffixTap: true,
+                    onSubmitted: (s) {
+                      // print(s);
+                      searchTodoList(s);
+                    },
+                    boxShadow: false,
+                  ),
+                ),
+                // IconButton(
+                //     onPressed: () {
+
+                //     },
+                //     icon: Icon(Icons.menu)),
+                // IconButton(onPressed: () {}, icon: Icon(Icons.sort)),
+                Expanded(
+                  flex: 1,
+                  child: MenuAnchor(
+                    menuChildren: [
+                      MenuItemButton(
+                        child: Text('截止日期和时间'),
+                        onPressed: () {},
+                      ),
+                      MenuItemButton(
+                        child: Text('任务创建时间'),
+                        onPressed: () {},
+                      ),
+                      MenuItemButton(
+                        child: Text('字母A-Z'),
+                        onPressed: () {},
+                      ),
+                      MenuItemButton(
+                        child: Text('字母Z-A'),
+                        onPressed: () {},
+                      ),
+                    ],
+                    builder: (context, controller, child) {
+                      return IconButton(
+                          onPressed: () {
+                            if (controller.isOpen) {
+                              controller.close();
+                            } else {
+                              controller.open();
+                            }
+                          },
+                          icon: Icon(Icons.sort));
+                    },
+                  ),
+                )
               ],
             ),
           ),
@@ -37,108 +204,48 @@ class _TaskPageState extends State<TaskPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  width: 300,
+                Expanded(
+                  flex: 9,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: [
-                        TextButton(onPressed: () {}, child: Text('所有')),
-                        TextButton(onPressed: () {}, child: Text('个人')),
-                        TextButton(onPressed: () {}, child: Text('心愿')),
-                        TextButton(onPressed: () {}, child: Text('心愿')),
-                        TextButton(onPressed: () {}, child: Text('心愿')),
-                        TextButton(onPressed: () {}, child: Text('心愿')),
-                      ],
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: categories
+                          .map((e) => getCategoryItemButton(e))
+                          .toList(),
                     ),
                   ),
                 ),
-                Container(
-                    child: IconButton(
-                        onPressed: () {}, icon: Icon(Icons.category_outlined)))
+                Expanded(
+                  flex: 1,
+                  child: IconButton(
+                      onPressed: () {}, icon: Icon(Icons.category_outlined)),
+                )
               ],
             ),
           ),
           Expanded(
-              child: ListView.builder(
-                  itemCount: 100,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text('$index'),
-                    );
-                  }))
+              child: SlidableAutoCloseBehavior(
+            child: ListView.builder(
+              itemCount: selectedTodoItems.length,
+              itemBuilder: (context, index) {
+                return todoListItemView(
+                  item: selectedTodoItems[index],
+                  starOnPressed: (context) {
+                    staredTodoItem(index);
+                  },
+                  deleteOnPressed: (context) {
+                    deleteTodoItem(index);
+                  },
+                  checkBoxOnChanged: (value) {
+                    checkedTodoItem(index);
+                  },
+                );
+              },
+            ),
+          ))
         ],
       ),
-
-      // child: Flex(
-      //   // mainAxisAlignment: MainAxisAlignment.start,
-      //   crossAxisAlignment: CrossAxisAlignment.start,
-      //   direction: Axis.vertical,
-      //   children: [
-      //     Expanded(
-      //         flex: 1,
-      //         child: IconButton(onPressed: () {}, icon: Icon(Icons.menu))),
-      //     Expanded(
-      //         flex: 1,
-      //         child:
-      //          Flex(
-      //           direction: Axis.horizontal,
-      //           children: [
-      //             TextButton(onPressed: () {}, child: Text('所有')),
-      //             TextButton(onPressed: () {}, child: Text('个人')),
-      //             TextButton(onPressed: () {}, child: Text('心愿')),
-      //             TextButton(onPressed: () {}, child: Text('心愿')),
-      //             TextButton(onPressed: () {}, child: Text('心愿')),
-      //             TextButton(onPressed: () {}, child: Text('心愿')),
-      //           ],
-      //         )),
-      //     Expanded(
-      //         flex: 8,
-      //         child: ListView.builder(
-      //           itemCount: 10,
-      //           itemBuilder: (context, index) {
-      //             return ListTile(
-      //               title: Text('$index'),
-      //             );
-      //           },
-      //         ))
-      //   ],
-      // ),
     );
   }
 }
-
-
-// class TaskPage extends StatelessWidget {
-//   Widget buildTile(TodoCategory tile) {
-//     if (tile.categories.isEmpty) {
-//       return ListTile(
-//         title: Text(tile.title),
-//       );
-//     } else {
-//       return ExpansionTile(
-//         title: Text(tile.title),
-//         children: tile.categories.map((e) => buildTile(e)).toList(),
-//       );
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     List<TodoCategory> categories = [
-//       TodoCategory(id: -1, title: '类别', categories: [
-//         TodoCategory(id: 0, title: '所有'),
-//         TodoCategory(id: 1, title: '工作'),
-//         TodoCategory(id: 2, title: '个人'),
-//         TodoCategory(id: 3, title: '心愿单'),
-//         TodoCategory(id: 4, title: '生日'),
-//       ]),
-//     ];
-
-//     return Container(
-//       child: ListView(
-//         children: categories.map(buildTile).toList(),
-//       ),
-//     );
-//   }
-// }

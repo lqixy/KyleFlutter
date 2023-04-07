@@ -5,6 +5,7 @@ class TodoItem {
   DateTime deadline;
   DateTime? time, remindTime;
   bool deleted = false;
+  int categoryId;
 
   // static  DateType dateType(){
 
@@ -35,6 +36,7 @@ class TodoItem {
       {required this.id,
       required this.title,
       required this.deadline,
+      this.categoryId = 0,
       this.time,
       this.remindTime,
       this.finished = false,
@@ -44,4 +46,13 @@ class TodoItem {
 
 enum Repeat { none, day, week, month, year }
 
-enum DateType { before, today, future }
+enum DateType {
+  before(0, '以前'),
+  today(1, '今天'),
+  future(2, '未来');
+
+  const DateType(this.number, this.value);
+
+  final int number;
+  final String value;
+}
